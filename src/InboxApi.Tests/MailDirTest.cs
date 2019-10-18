@@ -46,8 +46,8 @@ namespace InboxApi.Tests
 
             await message.LoadAsync();
 
-            Assert.Equal("Hello, world!", message.Headers ["Subject"][0]);
-            Assert.Equal("Recipient <recipient@domain.tld>", message.Headers ["To"][0]);
+            Assert.Equal("Hello, world!", message.Headers["Subject"][0]);
+            Assert.Equal("Recipient <recipient@domain.tld>", message.Headers["To"][0]);
         }
 
         [Fact]
@@ -59,7 +59,9 @@ namespace InboxApi.Tests
 
             await message.LoadAsync();
 
-            Assert.Equal("Voici un message qui est envoyé depuis Gmail.\r\nBien à toi.\r\n", message.RawBody);
+            var nl = Environment.NewLine;
+
+            Assert.Equal($"Voici un message qui est envoyé depuis Gmail.{nl}Bien à toi.{nl}", message.RawBody);
         }
 
         private IFilesystem CreateInMemoryFileSystem()
