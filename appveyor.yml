@@ -9,16 +9,16 @@ build_script:
   - sh: dotnet publish -c Release /home/appveyor/projects/masked-emails-inboxapi/src/InboxApi --self-contained --runtime linux-x64 --output /home/appveyor/projects/masked-emails-inboxapi/masked-emails-inboxapi/opt/masked-emails/api/
 
 after_build:
-  - sh: dos2unix /home/appveyor/projects/masked-emails-daemon/masked-emails-daemon/etc/init.d/masked-emails-api
-  - sh: dos2unix /home/appveyor/projects/masked-emails-daemon/masked-emails-daemon/lib/systemd/system/masked-emails-api.service
-  - sh: dos2unix /home/appveyor/projects/masked-emails-daemon/masked-emails-daemon/DEBIAN/config
-  - sh: chmod 755 /home/appveyor/projects/masked-emails-daemon/masked-emails-daemon/DEBIAN/config
-  - sh: dos2unix /home/appveyor/projects/masked-emails-daemon/masked-emails-daemon/DEBIAN/postinst
-  - sh: chmod 755 /home/appveyor/projects/masked-emails-daemon/masked-emails-daemon/DEBIAN/postinst
-  - sh: dos2unix /home/appveyor/projects/masked-emails-daemon/masked-emails-daemon/DEBIAN/postrm
-  - sh: chmod 755 /home/appveyor/projects/masked-emails-daemon/masked-emails-daemon/DEBIAN/postrm
-  - sh: dos2unix /home/appveyor/projects/masked-emails-daemon/masked-emails-daemon/DEBIAN/prerm
-  - sh: chmod 755 /home/appveyor/projects/masked-emails-daemon/masked-emails-daemon/DEBIAN/prerm
+  - sh: dos2unix /home/appveyor/projects/masked-emails-inboxapi/masked-emails-inboxapi/etc/init.d/masked-emails-api
+  - sh: dos2unix /home/appveyor/projects/masked-emails-inboxapi/masked-emails-inboxapi/lib/systemd/system/masked-emails-api.service
+  - sh: dos2unix /home/appveyor/projects/masked-emails-inboxapi/masked-emails-inboxapi/DEBIAN/config
+  - sh: chmod 755 /home/appveyor/projects/masked-emails-inboxapi/masked-emails-inboxapi/DEBIAN/config
+  - sh: dos2unix /home/appveyor/projects/masked-emails-inboxapi/masked-emails-inboxapi/DEBIAN/postinst
+  - sh: chmod 755 /home/appveyor/projects/masked-emails-inboxapi/masked-emails-inboxapi/DEBIAN/postinst
+  - sh: dos2unix /home/appveyor/projects/masked-emails-inboxapi/masked-emails-inboxapi/DEBIAN/postrm
+  - sh: chmod 755 /home/appveyor/projects/masked-emails-inboxapi/masked-emails-inboxapi/DEBIAN/postrm
+  - sh: dos2unix /home/appveyor/projects/masked-emails-inboxapi/masked-emails-inboxapi/DEBIAN/prerm
+  - sh: chmod 755 /home/appveyor/projects/masked-emails-inboxapi/masked-emails-inboxapi/DEBIAN/prerm
   - sh: fakeroot dpkg --build /home/appveyor/projects/masked-emails-inboxapi/masked-emails-inboxapi
 
 artifacts:
