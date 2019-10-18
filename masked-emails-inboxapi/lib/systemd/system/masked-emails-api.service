@@ -1,0 +1,7 @@
+[Service]
+Type=forking
+RemainAfterExit=no
+Restart=always
+RestartSec=5s
+ExecStart=/etc/init.d/masked-emails-api start
+ExecStop=/etc/init.d/masked-emails-api stop

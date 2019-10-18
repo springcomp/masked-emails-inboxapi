@@ -1,0 +1,11 @@
+#!/bin/sh
+
+## configuring service
+
+ln -s /lib/systemd/system/masked-emails-api.service /etc/systemd/system/masked-emails-api.service
+
+chmod 0755 /etc/init.d/masked-emails-api
+
+systemctl daemon-reload
+/etc/init.d/masked-emails-api start
+update-rc.d masked-emails-api defaults

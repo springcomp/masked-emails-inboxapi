@@ -1,0 +1,8 @@
+Package: masked-emails-inboxapi
+Version: 1.0
+Section: base
+Priority: optional
+Architecture: all
+Depends: liblttng-ust0, libcurl4, libssl1.0.0, libkrb5-3, zlib1g, libicu60
+Maintainer: Maxime Labelle <springcom@users.noreply.github.com>
+Description: Inbox API for Masked-Emails

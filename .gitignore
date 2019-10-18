@@ -1,3 +1,7 @@
 \.vs/
 [Bb]in/
 [Oo]bj/
+
+\*.deb
+
+masked\-emails\-inboxapi/opt/

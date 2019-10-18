@@ -1,0 +1,6 @@
+#!/bin/sh
+
+# stopping and unregistering service
+
+/etc/init.d/masked-emails-api stop
+update-rc.d -f masked-emails-api remove
