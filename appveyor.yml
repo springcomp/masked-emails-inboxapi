@@ -1,0 +1,36 @@
+image: ubuntu
+
+before_build:
+  - sh: sudo apt-get update
+  - sh: sudo apt-get install -y fakeroot dos2unix
+
+build_script:
+  - sh: dotnet test /home/appveyor/projects/masked-emails-inboxapi/src/InboxApi.Tests/
+  - sh: dotnet publish -c Release /home/appveyor/projects/masked-emails-inboxapi/src/InboxApi --self-contained --runtime linux-x64 --output /home/appveyor/projects/masked-emails-inboxapi/masked-emails-inboxapi/opt/masked-emails/api/
+
+after_build:
+  - sh: dos2unix /home/appveyor/projects/masked-emails-daemon/masked-emails-daemon/etc/init.d/masked-emails-api
+  - sh: dos2unix /home/appveyor/projects/masked-emails-daemon/masked-emails-daemon/lib/systemd/system/masked-emails-api.service
+  - sh: dos2unix /home/appveyor/projects/masked-emails-daemon/masked-emails-daemon/DEBIAN/config
+  - sh: chmod 755 /home/appveyor/projects/masked-emails-daemon/masked-emails-daemon/DEBIAN/config
+  - sh: dos2unix /home/appveyor/projects/masked-emails-daemon/masked-emails-daemon/DEBIAN/postinst
+  - sh: chmod 755 /home/appveyor/projects/masked-emails-daemon/masked-emails-daemon/DEBIAN/postinst
+  - sh: dos2unix /home/appveyor/projects/masked-emails-daemon/masked-emails-daemon/DEBIAN/postrm
+  - sh: chmod 755 /home/appveyor/projects/masked-emails-daemon/masked-emails-daemon/DEBIAN/postrm
+  - sh: dos2unix /home/appveyor/projects/masked-emails-daemon/masked-emails-daemon/DEBIAN/prerm
+  - sh: chmod 755 /home/appveyor/projects/masked-emails-daemon/masked-emails-daemon/DEBIAN/prerm
+  - sh: fakeroot dpkg --build /home/appveyor/projects/masked-emails-inboxapi/masked-emails-inboxapi
+
+artifacts:
+  - path: '**\*deb'
+    type: file
+
+deploy:
+  provider: AzureBlob
+  storage_account_name: masked
+  storage_access_key:
+    secure: HmiE9NOgUN/dsziSQGtM6nntxKrwGYQUdCeUf0DusKrtYUUwYS+oQPHkBd/kRPzETtVFZbaqnDPcYJ8A4qED2LIrmAZzNSDbaE5Ix+gyC22368xpSGT40dosTpoqpA2Y
+  container: debian
+  artifact: masked-emails-inboxapi.deb
+  unzip: false
+  set_content_type: false
