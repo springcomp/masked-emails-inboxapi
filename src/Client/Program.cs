@@ -1,10 +1,18 @@
 ﻿using System;
+using System.IO;
+using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
-using System.Text;
+using System.Reflection;
+using System.Runtime.InteropServices;
 using System.Text.Json;
 using System.Threading.Tasks;
 using IdentityModel.Client;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.EventLog;
 
 namespace Client
 {
@@ -19,27 +27,30 @@ namespace Client
 
         static async Task MainAsync(string[] args)
         {
-            var server = "http://localhost:5000";
-            var clientId = "client.svc";
-            var clientSecret = "please-type-the-secret-here";
-            var requestUri = "http://localhost:5002/emails";
+            var application =
+                CreateDefaultBuilder(args)
+                .Build()
+                ;
+
+            var serviceProvider = application.Services;
+            var hostEnvironment = serviceProvider.GetService<IHostEnvironment>();
+
+            Console.WriteLine($"Environment: {hostEnvironment.EnvironmentName}.");
+
+            var configuration = serviceProvider.GetService<IConfiguration>();
+            var section = configuration.GetSection("AppSettings");
+
+            var server = section.GetValue<string>("server");
+            var clientId = section.GetValue<string>("clientId");
+            var clientSecret = section.GetValue<string>("clientSecret");
+
+            var requestUri = section.GetValue<string>("requestUri");
+
+            Console.WriteLine($"Identity server: {server}.");
+            Console.WriteLine($"Client: {clientId}, ClientSecret: ***REDACTED***");
 
             const string INBOX = "alice123@domain.com";
 
-            if (args.Length == 2)
-            {
-                clientId = args[0];
-                clientSecret = args[1];
-            }
-            if (args.Length >= 3)
-            {
-                server = args[0];
-                clientId = args[1];
-                clientSecret = args[2];
-
-                if (args.Length == 4)
-                    requestUri = args[3];
-            }
             var tokenResponse = await RequestClientCredentials(server, clientId, clientSecret);
             if (tokenResponse == null)
             {
@@ -98,6 +109,69 @@ namespace Client
 
             return tokenResponse;
         }
+
+        private static IHostBuilder CreateDefaultBuilder(string[] args)
+        {
+            // this is the same code as Host.CreateDefaultBuilder()
+            // except:
+            // UseContentRoot uses assembly location instead of Directory.GetDirectoryName
+            // User-Secrets is used, even in non "development" environments
+
+            var location = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+
+            return
+                new HostBuilder()
+                    .UseContentRoot(location)
+                    .ConfigureHostConfiguration(config =>
+                    {
+                        config.SetBasePath(location);
+                        config.AddEnvironmentVariables("DOTNET_");
+
+                        if (args != null)
+                            config.AddCommandLine(args);
+                    })
+                    .ConfigureAppConfiguration((context, config) =>
+                    {
+                        var hostEnvironment = context.HostingEnvironment;
+                        config.AddJsonFile("appSettings.json", optional: true, reloadOnChange: true);
+                        config.AddJsonFile($"appSettings.{hostEnvironment.EnvironmentName}.json", optional: true, reloadOnChange: true);
+                        if (!string.IsNullOrEmpty(hostEnvironment.ApplicationName))
+                        {
+                            var assembly = Assembly.Load(new AssemblyName(hostEnvironment.ApplicationName));
+                            if (assembly != null)
+                                config.AddUserSecrets(assembly, optional: true);
+                        }
+
+                        config.AddEnvironmentVariables();
+
+                        if (args != null)
+                            config.AddCommandLine(args);
+                    })
+                    .ConfigureLogging((context, logging) =>
+                    {
+                        var isWindows = RuntimeInformation.IsOSPlatform(OSPlatform.Windows);
+                        if (isWindows)
+                        {
+                            logging.AddFilter<EventLogLoggerProvider>(level => level >= LogLevel.Warning);
+                        }
+
+                        logging.AddConfiguration(context.Configuration.GetSection("Logging"));
+                        logging.AddConsole();
+                        logging.AddDebug();
+                        logging.AddEventSourceLogger();
+
+                        if (isWindows)
+                        {
+                            logging.AddEventLog();
+                        }
+                    })
+                    .UseDefaultServiceProvider((context, options) =>
+                    {
+                        options.ValidateOnBuild = options.ValidateScopes = context.HostingEnvironment.IsDevelopment();
+                    })
+                ;
+        }
+
     }
 }
 
