@@ -37,9 +37,10 @@ namespace InboxApi
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             if (!Environment.IsDevelopment())
-                app.UseHsts();
+            {
+                app.UseHttpsRedirection();
+            }
 
-            app.UseHttpsRedirection();
             app.HandleExceptions();
             app.UseAuthentication();
             app.UseStaticFiles();
@@ -79,7 +80,7 @@ namespace InboxApi
             services.AddTransient<IInboxService, InboxService>();
             services.AddTransient<IMailDir, MailDir>();
             services.AddTransient<IFilesystem, Filesystem>(
-                serviceProvider => new Filesystem(Configuration));
+                serviceProvider => new Filesystem(serviceProvider.GetService<IWebHostEnvironment>(), Configuration));
         }
     }
 }

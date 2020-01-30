@@ -22,7 +22,7 @@ namespace InboxApi.Controllers
             logger_ = logger;
         }
 
-        [Route("list")]
+        [Route("")]
         [HttpPost]
         public async Task<ActionResult> GetEmails([FromBody] string[] inboxes)
         {

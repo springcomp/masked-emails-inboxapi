@@ -5,3 +5,5 @@
 \*.deb
 
 masked\-emails\-inboxapi/opt/
+
+launchSettings\.json

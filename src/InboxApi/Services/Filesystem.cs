@@ -3,6 +3,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using InboxApi.Interop;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 
 namespace InboxApi.Services
@@ -11,13 +12,14 @@ namespace InboxApi.Services
     {
         private readonly string rootPath_;
 
-        public Filesystem(IConfiguration configuration)
-            : this(configuration["Inbox:Root"])
-        { }
-
-        public Filesystem(string rootPath)
+        public Filesystem(IWebHostEnvironment environment, IConfiguration configuration)
+            : this(environment, configuration["Inbox:Root"])
         {
-            rootPath_ = rootPath;
+        }
+
+        public Filesystem(IWebHostEnvironment environment, string rootPath)
+        {
+            rootPath_ = rootPath.Replace("~", environment.ContentRootPath);
         }
 
         public IEnumerable<string> EnumerateFiles(string path)
