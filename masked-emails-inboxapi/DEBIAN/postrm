@@ -1,3 +1,0 @@
-#!/bin/sh
-
-if [[ -L /etc/systemd/system/masked-emails-api.service ]]; then rm /etc/systemd/system/masked-emails-api.service; fi
