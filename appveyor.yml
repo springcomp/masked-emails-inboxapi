@@ -1,36 +1,25 @@
 image: ubuntu
 
-before_build:
-  - sh: sudo apt-get update
-  - sh: sudo apt-get install -y fakeroot dos2unix
-
 build_script:
   - sh: dotnet test /home/appveyor/projects/masked-emails-inboxapi/src/InboxApi.Tests/
-  - sh: dotnet publish -c Release /home/appveyor/projects/masked-emails-inboxapi/src/InboxApi --self-contained --runtime linux-x64 --output /home/appveyor/projects/masked-emails-inboxapi/masked-emails-inboxapi/opt/masked-emails/api/
+  - sh: dotnet publish -c Release /home/appveyor/projects/masked-emails-inboxapi/src/InboxApi --self-contained --runtime linux-x64 --output ./output/
 
 after_build:
-  - sh: dos2unix /home/appveyor/projects/masked-emails-inboxapi/masked-emails-inboxapi/etc/init.d/masked-emails-api
-  - sh: dos2unix /home/appveyor/projects/masked-emails-inboxapi/masked-emails-inboxapi/lib/systemd/system/masked-emails-api.service
-  - sh: dos2unix /home/appveyor/projects/masked-emails-inboxapi/masked-emails-inboxapi/DEBIAN/config
-  - sh: chmod 755 /home/appveyor/projects/masked-emails-inboxapi/masked-emails-inboxapi/DEBIAN/config
-  - sh: dos2unix /home/appveyor/projects/masked-emails-inboxapi/masked-emails-inboxapi/DEBIAN/postinst
-  - sh: chmod 755 /home/appveyor/projects/masked-emails-inboxapi/masked-emails-inboxapi/DEBIAN/postinst
-  - sh: dos2unix /home/appveyor/projects/masked-emails-inboxapi/masked-emails-inboxapi/DEBIAN/postrm
-  - sh: chmod 755 /home/appveyor/projects/masked-emails-inboxapi/masked-emails-inboxapi/DEBIAN/postrm
-  - sh: dos2unix /home/appveyor/projects/masked-emails-inboxapi/masked-emails-inboxapi/DEBIAN/prerm
-  - sh: chmod 755 /home/appveyor/projects/masked-emails-inboxapi/masked-emails-inboxapi/DEBIAN/prerm
-  - sh: fakeroot dpkg --build /home/appveyor/projects/masked-emails-inboxapi/masked-emails-inboxapi
+  - 7z a ./artifacts/archive.zip ./output/
 
 artifacts:
-  - path: '**\*deb'
+  - path: artifacts/archive.zip
+    name: archive
     type: file
 
 deploy:
-  provider: AzureBlob
-  storage_account_name: masked
-  storage_access_key:
-    secure: HmiE9NOgUN/dsziSQGtM6nntxKrwGYQUdCeUf0DusKrtYUUwYS+oQPHkBd/kRPzETtVFZbaqnDPcYJ8A4qED2LIrmAZzNSDbaE5Ix+gyC22368xpSGT40dosTpoqpA2Y
-  container: debian
-  artifact: masked-emails-inboxapi.deb
-  unzip: false
-  set_content_type: false
+  - provider: GitHub
+    release: $(APPVEYOR_REPO_TAG_NAME)
+    description: Masked Emails Inbox API
+    auth_token:
+      secure: QxXD5boO1cRwZNpg17XsXqC1kxznj5IhNa1m4TvpuUzl6BSErb99eM0+wMbE5dv8
+    artifact: /.*\.(zip)$/
+    prerelease: true
+    on:
+      branch: master # only release from master branch
+      APPVEYOR_REPO_TAG: true # only release on new tag
