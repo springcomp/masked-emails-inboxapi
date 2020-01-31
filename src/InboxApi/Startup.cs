@@ -36,10 +36,10 @@ namespace InboxApi
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            if (!Environment.IsDevelopment())
-            {
-                app.UseHttpsRedirection();
-            }
+            //if (!Environment.IsDevelopment())
+            //{
+            //    app.UseHttpsRedirection();
+            //}
 
             app.HandleExceptions();
             app.UseAuthentication();
@@ -65,14 +65,14 @@ namespace InboxApi
                     options.Audience = appSettings.Audience;
                 });
 
-            if (!Environment.IsDevelopment())
-            {
-                services.AddHttpsRedirection(options =>
-                {
-                    options.RedirectStatusCode = StatusCodes.Status308PermanentRedirect;
-                    options.HttpsPort = appSettings.HttpsPort;
-                });
-            }
+            //if (!Environment.IsDevelopment())
+            //{
+            //    services.AddHttpsRedirection(options =>
+            //    {
+            //        options.RedirectStatusCode = StatusCodes.Status308PermanentRedirect;
+            //        options.HttpsPort = appSettings.HttpsPort;
+            //    });
+            //}
         }
 
         private void ConfigureDependencies(IServiceCollection services)
