@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using InboxApi.Interop;
 using MimeKit;
@@ -34,11 +35,12 @@ namespace InboxApi
                 dictionary[header.Field].Add(header.Value);
             }
 
-            // create case insensitive headers dictionary
+            // convert List<string> to string[]
 
-            var headers = new Dictionary<string, string[]>(StringComparer.OrdinalIgnoreCase);
-            foreach (var (key, value) in dictionary)
-                headers.Add(key, value.ToArray());
+            var headers = dictionary.ToDictionary(
+                kvp => kvp.Key,
+                kvp => kvp.Value.ToArray()
+            );
 
             Headers = headers;
 
