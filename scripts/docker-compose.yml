@@ -1,0 +1,14 @@
+version: '2'
+services:
+  inbox:
+    image: springcomp/masked-emails-inbox-api:latest
+    hostname: inbox
+    domainname: masked-emails
+    container_name: inbox
+    ports:
+    - "5000:5000"
+    volumes:
+    - /var/mail/:/var/mail/
+    environment:
+    - VARIABLE=${VARIABLE}
+    restart: unless-stopped
