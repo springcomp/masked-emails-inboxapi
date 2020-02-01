@@ -1,4 +1,6 @@
+using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -23,7 +25,9 @@ namespace InboxApi.Services
         public async IAsyncEnumerable<IMailDirMessage> GetMessagesAsync(string address)
         {
             var (_, inbox) = EmailAddressUtils.Split(address);
-            foreach (var path in filesystem_.EnumerateFiles(inbox).Where(p => mailDirRegex_.Match(p).Success))
+            foreach (var path in filesystem_.EnumerateFiles(inbox)
+                .Where(p => IsValidSubfolder(p))
+                .Where(p => mailDirRegex_.Match(p).Success))
             {
                 var message = new MailDirMessage(filesystem_, path);
                 await message.LoadAsync();
@@ -38,5 +42,31 @@ namespace InboxApi.Services
 
             return message;
         }
+
+        private bool IsValidSubfolder(string path)
+        {
+            // path is: recipient/<file>
+            //      or: recipient/<folder>/<...> 
+
+            // omit the following well-known "secondary" folders:
+            // .Drafts, .Junk, .Sent, .Trash and tmp
+
+            var excludeFolders = new[]{
+                ".Drafts",
+                ".Junk",
+                ".Sent",
+                ".Trash",
+                "tmp",
+            };
+
+            var separators = new[] { Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar, };
+            var fragments = path.Split(separators, StringSplitOptions.None);
+
+            if (fragments.Length > 2 && excludeFolders.Contains(fragments[1]))
+                return false;
+
+            return true;
+        }
+
     }
 }

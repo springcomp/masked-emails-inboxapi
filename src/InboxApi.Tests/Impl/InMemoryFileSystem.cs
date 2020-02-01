@@ -21,7 +21,7 @@ namespace InboxApi.Tests.Impl
 
         public IEnumerable<string> EnumerateFiles(string path)
         {
-            return files_.Where(f => f.Item1.Contains($"/{path}")).Select(f => f.Item1);
+            return files_.Where(f => f.Item1.Contains(path)).Select(f => f.Item1);
         }
 
         public Task<Stream> ReadToEndAsync(string path)

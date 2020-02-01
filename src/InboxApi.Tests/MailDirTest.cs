@@ -15,7 +15,7 @@ namespace InboxApi.Tests
         [Fact]
         public async Task MailDir_GetMessagePaths()
         {
-            const string location = "domain.tld/recipient/new/1571380885.M637295P6116.mail,S=3325,W=3391";
+            const string location = "recipient/new/1571380885.M637295P6116.mail,S=3325,W=3391";
 
             var filesystem = CreateInMemoryFileSystem();
             var mailDir = new MailDir(filesystem);
@@ -40,7 +40,7 @@ namespace InboxApi.Tests
         [Fact]
         public async Task MailDirMessage_Headers()
         {
-            const string location = "domain.tld/recipient/new/1571380885.M637295P6116.mail,S=3325,W=3391";
+            const string location = "recipient/new/1571380885.M637295P6116.mail,S=3325,W=3391";
             var filesystem = CreateInMemoryFileSystem();
             var message = new MailDirMessage(filesystem, location);
 
@@ -53,7 +53,7 @@ namespace InboxApi.Tests
         [Fact]
         public async Task MailDirMessage_Body()
         {
-            const string location = "domain.tld/recipient/new/1571380885.M637295P6116.mail,S=3325,W=3391";
+            const string location = "recipient/new/1571380885.M637295P6116.mail,S=3325,W=3391";
             var filesystem = CreateInMemoryFileSystem();
             var message = new MailDirMessage(filesystem, location);
 
@@ -67,16 +67,20 @@ namespace InboxApi.Tests
         private IFilesystem CreateInMemoryFileSystem()
         {
             return new InMemoryFileSystem(
-                new FileSpec("domain.tld/recipient/dovecot.index.log", ""),
-                new FileSpec("domain.tld/recipient/dovecot.list.index.log", ""),
-                new FileSpec("domain.tld/recipient/dovecot-uidlist", ""),
-                new FileSpec("domain.tld/recipient/dovecot-uidvalidity", ""),
-                new FileSpec("domain.tld/recipient/new/1571380885.M637295P6116.mail,S=3325,W=3391", GetContent("recipient/1571380885.M637295P6116.mail")),
-                new FileSpec("domain.tld/someone/dovecot.index.log", ""),
-                new FileSpec("domain.tld/someone/dovecot.list.index.log", ""),
-                new FileSpec("domain.tld/someone/dovecot-uidlist", ""),
-                new FileSpec("domain.tld/someone/dovecot-uidvalidity", ""),
-                new FileSpec("domain.tld/someone/cur/1571380875.M637395P6116.mail,S=3326,W=3392", "")
+                new FileSpec("recipient/dovecot.index.log", ""),
+                new FileSpec("recipient/dovecot.list.index.log", ""),
+                new FileSpec("recipient/dovecot-uidlist", ""),
+                new FileSpec("recipient/dovecot-uidvalidity", ""),
+                new FileSpec("recipient/new/1571380885.M637295P6116.mail,S=3325,W=3391", GetContent("recipient/1571380885.M637295P6116.mail")),
+                new FileSpec("recipient/.Drafts/1571380875.M637395P6116.mail,S=3326,W=3392", GetContent("recipient/1571380885.M637295P6116.mail")),
+                new FileSpec("recipient/.Junk/1571380875.M637395P6116.mail,S=3326,W=3392", GetContent("recipient/1571380885.M637295P6116.mail")),
+                new FileSpec("recipient/.Sent/1571380875.M637395P6116.mail,S=3326,W=3392", GetContent("recipient/1571380885.M637295P6116.mail")),
+                new FileSpec("recipient/.Trash/1571380875.M637395P6116.mail,S=3326,W=3392", GetContent("recipient/1571380885.M637295P6116.mail")),
+                new FileSpec("recipient/tmp/1571380875.M637395P6116.mail,S=3326,W=3392", GetContent("recipient/1571380885.M637295P6116.mail")),
+                new FileSpec("someone/dovecot.index.log", ""),
+                new FileSpec("someone/dovecot.list.index.log", ""),
+                new FileSpec("someone/dovecot-uidlist", ""),
+                new FileSpec("someone/dovecot-uidvalidity", "")
             );
         }
 
