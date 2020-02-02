@@ -27,6 +27,9 @@ namespace InboxApi
         public async Task<InboxMessage> GetMessageAsync(string path)
         {
             var message = await mailDir_.GetMessageAsync(path);
+            if (message.RawBody == null)
+                throw new KeyNotFoundException("This message may have expired or been forwarded to its target email address.");
+
             return MimeParse(message);
         }
 

@@ -43,8 +43,20 @@ namespace InboxApi.Services
         public async Task<Stream> ReadToEndAsync(string path)
         {
             var fullPath = GetFullPath(path);
-            var buffer = await File.ReadAllBytesAsync(fullPath);
-            return new MemoryStream(buffer);
+            try
+            {
+                var buffer = await File.ReadAllBytesAsync(fullPath);
+                return new MemoryStream(buffer);
+            }
+            catch (FileNotFoundException)
+            {
+                // messages may disappear
+                // - forwarded to target email address
+                // - purged after expiration time
+                // - mailbox removed
+
+                return Stream.Null;
+            }
         }
 
         private string GetFullPath(string path)
