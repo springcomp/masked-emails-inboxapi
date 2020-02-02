@@ -1,4 +1,8 @@
 ﻿using System.Collections.Generic;
+using System.IO;
+using System.Net;
+using System.Net.Http.Headers;
+using System.Text.Json;
 using System.Threading.Tasks;
 using InboxApi.Interop;
 using InboxApi.Model;
@@ -8,7 +12,7 @@ using Microsoft.Extensions.Logging;
 
 namespace InboxApi.Controllers
 {
-    [Authorize]
+    //[Authorize]
     [ApiController]
     [Route("[controller]")]
     public sealed class EmailsController : ControllerBase
@@ -38,10 +42,37 @@ namespace InboxApi.Controllers
 
         [Route("body")]
         [HttpPost]
-        public async Task<ActionResult> GetEmail([FromBody] string path)
+        public async Task<ActionResult> GetEmail()
         {
+            var mediaType = MediaTypeHeaderValue.Parse(Request.ContentType);
+
+            var path = "";
+
+            if (mediaType.MediaType == "application/json")
+                path = await Request.Body.ReadAsJsonAsync();
+            else if (mediaType.MediaType == "text/plain")
+                path = await Request.Body.ReadAsStringAsync();
+            else
+                return StatusCode((int)HttpStatusCode.UnsupportedMediaType);
+
+            if (string.IsNullOrWhiteSpace(path))
+                return BadRequest();
+
             var message = await inboxService_.GetMessageAsync(path);
             return Ok(message);
+        }
+    }
+
+    public static class StreamExtensions
+    {
+        public static async Task<string> ReadAsStringAsync(this Stream stream)
+        {
+            using (var reader = new StreamReader(stream))
+                return await reader.ReadToEndAsync();
+        }
+        public static async Task<string> ReadAsJsonAsync(this Stream stream)
+        {
+            return (string) JsonSerializer.Deserialize(await ReadAsStringAsync(stream), typeof(string), null);
         }
     }
 }

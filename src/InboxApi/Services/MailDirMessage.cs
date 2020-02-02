@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using InboxApi.Interop;
@@ -52,6 +53,9 @@ namespace InboxApi
         private async Task<MimeMessage> LoadMessageAsync()
         {
             await using var stream = await filesystem_.ReadToEndAsync(Location);
+            if (stream == Stream.Null)
+                return new MimeMessage();
+
             return await MimeMessage.LoadAsync(stream);
         }
     }
