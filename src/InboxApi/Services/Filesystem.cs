@@ -25,10 +25,19 @@ namespace InboxApi.Services
         public IEnumerable<string> EnumerateFiles(string path)
         {
             var fullPath = GetFullPath(path);
-            return Directory
-                    .EnumerateFiles(fullPath, "*.*", SearchOption.AllDirectories)
-                    .Select(MakeRelativePath)
-                ;
+            try
+            {
+                return Directory
+                        .EnumerateFiles(fullPath, "*.*", SearchOption.AllDirectories)
+                        .Select(MakeRelativePath)
+                    ;
+            }
+            catch (DirectoryNotFoundException)
+            {
+                // mailboxes may disappear
+
+                return Enumerable.Empty<string>();
+            }
         }
 
         public async Task<Stream> ReadToEndAsync(string path)
