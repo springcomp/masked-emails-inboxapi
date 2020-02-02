@@ -12,7 +12,7 @@ using Microsoft.Extensions.Logging;
 
 namespace InboxApi.Controllers
 {
-    //[Authorize]
+    [Authorize]
     [ApiController]
     [Route("[controller]")]
     public sealed class EmailsController : ControllerBase
