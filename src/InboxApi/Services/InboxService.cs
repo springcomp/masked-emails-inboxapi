@@ -60,6 +60,7 @@ namespace InboxApi
                 Subject = subject,
 
                 TextBody = message.RawBody,
+                HtmlBody = message.HtmlBody,
             };
         }
     }

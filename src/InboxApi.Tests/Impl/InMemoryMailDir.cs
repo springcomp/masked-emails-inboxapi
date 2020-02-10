@@ -48,6 +48,8 @@ namespace InboxApi.Tests.Impl
             public IDictionary<string, string[]> Headers => headers_;
 
             public string RawBody { get; }
+            public string HtmlBody { get; }
+
             public Task LoadAsync()
             {
                 return Task.CompletedTask;

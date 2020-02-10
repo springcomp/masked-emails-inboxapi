@@ -23,6 +23,7 @@ namespace InboxApi
         public IDictionary<string, string[]> Headers { get; private set; }
 
         public string RawBody { get; private set; }
+        public string HtmlBody { get; private set; }
 
         public async Task LoadAsync()
         {
@@ -48,6 +49,7 @@ namespace InboxApi
             // load message body
 
             RawBody = message.TextBody;
+            HtmlBody =  message.HtmlBody;
         }
 
         private async Task<MimeMessage> LoadMessageAsync()

@@ -45,7 +45,7 @@ MIME-Version: 1.0
 From: Reader Medium <medium.read@gmail.com>
 Date: Fri, 18 Oct 2019 08:41:13 +0200
 Message-ID: <CADJFppBzs_7inVFm8LEwGiFoR-_J757pdFCMdkoRY20kWW2ofQ@mail.gmail.com>
-Subject: Goodbye, dude!
+Subject: Hello, world!
 To: Recipient <alice@example.com>
 Content-Type: multipart/alternative; boundary="0000000000006092fd0595299f5b"
 
@@ -53,14 +53,14 @@ Content-Type: multipart/alternative; boundary="0000000000006092fd0595299f5b"
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-Voici un message qui est envoy=C3=A9 depuis Outlook.
+Voici un message qui est envoy=C3=A9 depuis Gmail.
 Bien =C3=A0 toi.
 
 --0000000000006092fd0595299f5b
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<div dir=3D"ltr">Voici un message qui est envoy=C3=A9 depuis Outlook.<div>Bie=
+<div dir=3D"ltr">Voici un message qui est envoy=C3=A9 depuis Gmail.<div>Bie=
 n =C3=A0 toi.</div></div>
 
 --0000000000006092fd0595299f5b--

@@ -26,6 +26,7 @@ namespace InboxApi.Interop
         /// Initially empty, load with the <see cref="LoadAsync" /> method.
         /// </summary>
         string RawBody { get; }
+        string HtmlBody { get; }
 
         /// <summary>
         /// Reads the content of the mime message.
