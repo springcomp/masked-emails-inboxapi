@@ -10,6 +10,8 @@ namespace InboxApi
 {
     public class MailDirMessage : IMailDirMessage
     {
+        private static readonly MimeMessage Empty = new MimeMessage();
+
         private readonly IFilesystem filesystem_;
 
         public MailDirMessage(IFilesystem filesystem, string path)
@@ -56,7 +58,7 @@ namespace InboxApi
         {
             await using var stream = await filesystem_.ReadToEndAsync(Location);
             if (stream == Stream.Null)
-                return new MimeMessage();
+                return Empty;
 
             return await MimeMessage.LoadAsync(stream);
         }

@@ -46,6 +46,8 @@ namespace InboxApi.Controllers
         {
             var mediaType = MediaTypeHeaderValue.Parse(Request.ContentType);
 
+            logger_.LogDebug($"Requesting message (content-type = '{mediaType}'.");
+
             var path = "";
 
             if (mediaType.MediaType == "application/json")
@@ -57,6 +59,8 @@ namespace InboxApi.Controllers
 
             if (string.IsNullOrWhiteSpace(path))
                 return BadRequest();
+
+            logger_.LogDebug($"Retrieving message at location '{path}'.");
 
             var message = await inboxService_.GetMessageAsync(path);
             return Ok(message);
