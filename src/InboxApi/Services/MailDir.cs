@@ -11,7 +11,7 @@ namespace InboxApi.Services
 {
     public class MailDir : IMailDir
     {
-        const string MailDirMessagePattern = @"(?:[1-9][0-9]{9})\..+\.mail,S=.*$";
+        const string MailDirMessagePattern = @"(?:[1-9][0-9]{9})\..+\.mail(?:\.[^,]+)?,S=.*$";
 
         private static readonly Regex mailDirRegex_ = new Regex(MailDirMessagePattern, RegexOptions.Singleline | RegexOptions.Compiled);
 
