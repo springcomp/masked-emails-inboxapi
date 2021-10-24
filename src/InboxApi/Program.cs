@@ -13,6 +13,10 @@ namespace InboxApi
     {
         public static void Main(string[] args)
         {
+            #if DEBUG
+            Console.WriteLine("**Note**: when debugging locally, you might want to listen on an alternate tcp port.");
+            Console.WriteLine("Please, run 'dotnet run -- urls=\"http://localhost:5002\" to debug locally.");
+            #endif
             CreateHostBuilder(args).Build().Run();
         }
 
