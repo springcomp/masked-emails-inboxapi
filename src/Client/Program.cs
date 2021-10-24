@@ -47,7 +47,7 @@ namespace Client
             var requestUri = section.GetValue<string>("requestUri");
 
             Console.WriteLine($"Identity server: {server}.");
-            Console.WriteLine($"Client: {clientId}, ClientSecret: ***REDACTED***");
+            Console.WriteLine($"Client: {clientId}, ClientSecret: {clientSecret.Substring(0, 4)}***REDACTED***");
 
             const string INBOX = "alice123@domain.com";
 
