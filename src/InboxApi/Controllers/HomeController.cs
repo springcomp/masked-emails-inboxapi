@@ -1,17 +1,12 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using System.Threading.Tasks;
-
-namespace InboxApi.Controllers
+﻿[ApiController()]
+[Route("")]
+public sealed class HomeController : ControllerBase
 {
-    [ApiController()]
+    [HttpGet()]
     [Route("")]
-    public sealed class HomeController : ControllerBase
+    public ContentResult Index()
     {
-        [HttpGet()]
-        [Route("")]
-        public ContentResult Index()
-        {
-            return Content(@"
+        return Content(@"
 <html>
 <head>
 <link href=""https://fonts.googleapis.com/css?family=Roboto:300,400,500&display=swap"" rel=""stylesheet"">
@@ -21,6 +16,5 @@ namespace InboxApi.Controllers
   <span class=""title"">Masked Emails Inbox API</span>
 </body></html>
 ", "text/html");
-        }
     }
 }

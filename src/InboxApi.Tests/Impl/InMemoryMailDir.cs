@@ -1,10 +1,8 @@
+using MimeKit;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using InboxApi.Interop;
-using InboxApi.Utils;
-using MimeKit;
 using Utils;
 
 namespace InboxApi.Tests.Impl

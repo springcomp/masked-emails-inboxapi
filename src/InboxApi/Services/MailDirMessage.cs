@@ -1,66 +1,58 @@
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
 using InboxApi.Interop;
 using MimeKit;
 
-namespace InboxApi
+public class MailDirMessage : IMailDirMessage
 {
-    public class MailDirMessage : IMailDirMessage
+    private static readonly MimeMessage Empty = new MimeMessage();
+
+    private readonly IFilesystem filesystem_;
+
+    public MailDirMessage(IFilesystem filesystem, string path)
     {
-        private static readonly MimeMessage Empty = new MimeMessage();
+        filesystem_ = filesystem;
+        Location = path;
+    }
 
-        private readonly IFilesystem filesystem_;
+    public string Location { get; }
 
-        public MailDirMessage(IFilesystem filesystem, string path)
+    public IDictionary<string, string[]> Headers { get; private set; }
+
+    public string RawBody { get; private set; }
+    public string HtmlBody { get; private set; }
+
+    public async Task LoadAsync()
+    {
+        var message = await LoadMessageAsync();
+
+        var dictionary = new Dictionary<string, List<string>>();
+        foreach (var header in message.Headers)
         {
-            filesystem_ = filesystem;
-            Location = path;
+            if (!dictionary.ContainsKey(header.Field))
+                dictionary.Add(header.Field, new List<string>());
+            dictionary[header.Field].Add(header.Value);
         }
 
-        public string Location { get; }
+        // convert List<string> to string[]
 
-        public IDictionary<string, string[]> Headers { get; private set; }
+        var headers = dictionary.ToDictionary(
+            kvp => kvp.Key,
+            kvp => kvp.Value.ToArray()
+        );
 
-        public string RawBody { get; private set; }
-        public string HtmlBody { get; private set; }
+        Headers = headers;
 
-        public async Task LoadAsync()
-        {
-            var message = await LoadMessageAsync();
+        // load message body
 
-            var dictionary = new Dictionary<string, List<string>>();
-            foreach (var header in message.Headers)
-            {
-                if (!dictionary.ContainsKey(header.Field))
-                    dictionary.Add(header.Field, new List<string>());
-                dictionary[header.Field].Add(header.Value);
-            }
+        RawBody = message.TextBody;
+        HtmlBody = message.HtmlBody;
+    }
 
-            // convert List<string> to string[]
+    private async Task<MimeMessage> LoadMessageAsync()
+    {
+        await using var stream = await filesystem_.ReadToEndAsync(Location);
+        if (stream == Stream.Null)
+            return Empty;
 
-            var headers = dictionary.ToDictionary(
-                kvp => kvp.Key,
-                kvp => kvp.Value.ToArray()
-            );
-
-            Headers = headers;
-
-            // load message body
-
-            RawBody = message.TextBody;
-            HtmlBody =  message.HtmlBody;
-        }
-
-        private async Task<MimeMessage> LoadMessageAsync()
-        {
-            await using var stream = await filesystem_.ReadToEndAsync(Location);
-            if (stream == Stream.Null)
-                return Empty;
-
-            return await MimeMessage.LoadAsync(stream);
-        }
+        return await MimeMessage.LoadAsync(stream);
     }
 }

@@ -2,9 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using InboxApi.Interop;
-using InboxApi.Services;
 using InboxApi.Tests.Impl;
-using MimeKit;
 using Xunit;
 
 namespace InboxApi.Tests
