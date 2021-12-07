@@ -17,6 +17,7 @@ public sealed class Application
         var server = appSettings_.Server;
         var clientId = appSettings_.ClientId;
         var clientSecret = appSettings_.ClientSecret;
+        var audience = appSettings_.Audience;
 
         var requestUri = appSettings_.RequestUri;
 
@@ -25,7 +26,7 @@ public sealed class Application
 
         const string INBOX = "alice123@domain.com";
 
-        var tokenResponse = await RequestClientCredentials(server, clientId, clientSecret);
+        var tokenResponse = await RequestClientCredentials(server, clientId, clientSecret, audience);
         if (tokenResponse == null)
         {
             Console.Error.WriteLine("An error occurred while requesting a token.");
@@ -53,10 +54,19 @@ public sealed class Application
         }
     }
 
-    private static async Task<TokenResponse?> RequestClientCredentials(string server, string clientId, string clientSecret)
+    private static async Task<TokenResponse?> RequestClientCredentials(string server, string clientId, string clientSecret, string audience)
     {
         var client = new HttpClient();
-        var disco = await client.GetDiscoveryDocumentAsync(server);
+        var request = new DiscoveryDocumentRequest() {
+            Address = server,
+            Policy = new DiscoveryPolicy() {
+                Authority = server.Replace("sts", "login"),
+                RequireHttps = true,
+                ValidateIssuerName = false,
+                ValidateEndpoints = false,
+            }, 
+        };
+        var disco = await client.GetDiscoveryDocumentAsync(request);
         if (disco.IsError)
         {
             Console.Error.WriteLine(disco.Error);
@@ -70,7 +80,7 @@ public sealed class Application
                 ClientId = clientId,
                 ClientSecret = clientSecret,
 
-                Scope = "inbox",
+                Resource = new[] { audience },
             });
 
         if (tokenResponse.IsError)

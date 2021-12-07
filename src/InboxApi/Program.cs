@@ -1,34 +1,27 @@
 using InboxApi.Interop;
-using Utils.Configuration;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.Identity.Web;
 using Utils.Owin;
 
 #if DEBUG
 
 Console.WriteLine("**Note**: when debugging locally, you might want to listen on an alternate tcp port.");
-Console.WriteLine("Please, run 'dotnet run -- urls=\"http://localhost:5002\" to debug locally.");
+Console.WriteLine("Please, run 'dotnet run -- urls=\"http://localhost:5002\"' to debug locally.");
 
 #endif
 
 var builder = WebApplication.CreateBuilder(args);
 
-var appSettings = new AppSettings();
-var appSettingsSection = builder.Configuration.GetSection("AppSettings");
-appSettingsSection.Bind(appSettings);
-
-builder.Services.AddAuthentication("Bearer")
-    .AddJwtBearer("Bearer", options =>
-    {
-        options.Authority = appSettings.Authority;
-        options.RequireHttpsMetadata = appSettings.RequireHttpsMetadata;
-        options.Audience = appSettings.Audience;
-    });
+builder.Services
+    .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddMicrosoftIdentityWebApi(builder.Configuration)
+    ;
 
 if (!builder.Environment.IsDevelopment())
 {
     builder.Services.AddHttpsRedirection(options =>
     {
         options.RedirectStatusCode = StatusCodes.Status308PermanentRedirect;
-        options.HttpsPort = appSettings.HttpsPort;
     });
 }
 
@@ -36,9 +29,6 @@ builder.Services
     .AddMvcCore(options => { options.EnableEndpointRouting = false; })
     .AddAuthorization()
     ;
-
-builder.Services.AddOptions();
-builder.Services.Configure<AppSettings>(appSettingsSection);
 
 builder.Services.AddTransient<IInboxService, InboxService>();
 builder.Services.AddTransient<IMailDir, MailDir>();
@@ -56,9 +46,7 @@ if (!app.Environment.IsDevelopment())
 
 app.HandleExceptions();
 app.UseAuthentication();
-
-app.UseStaticFiles();
-
-app.UseMvc();
+app.UseAuthorization();
+app.MapControllers();
 
 app.Run();

@@ -1,8 +1,7 @@
 ﻿using System.Net;
 using System.Net.Http.Headers;
-using System.Text.Json;
 
-[Authorize]
+[Authorize(Roles = "inbox")]
 [ApiController]
 [Route("[controller]")]
 public sealed class EmailsController : ControllerBase
@@ -54,18 +53,5 @@ public sealed class EmailsController : ControllerBase
 
         var message = await inboxService_.GetMessageAsync(path);
         return Ok(message);
-    }
-}
-
-public static class StreamExtensions
-{
-    public static async Task<string> ReadAsStringAsync(this Stream stream)
-    {
-        using (var reader = new StreamReader(stream))
-            return await reader.ReadToEndAsync();
-    }
-    public static async Task<string> ReadAsJsonAsync(this Stream stream)
-    {
-        return (string)JsonSerializer.Deserialize(await ReadAsStringAsync(stream), typeof(string), (JsonSerializerOptions)null);
     }
 }
