@@ -1,6 +1,7 @@
 using InboxApi.Interop;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Identity.Web;
+using Microsoft.IdentityModel.Logging;
 using Utils.Owin;
 
 #if DEBUG
@@ -12,18 +13,20 @@ Console.WriteLine("Please, run 'dotnet run -- urls=\"http://localhost:5002\"' to
 
 var builder = WebApplication.CreateBuilder(args);
 
+IdentityModelEventSource.ShowPII = true;
+
 builder.Services
     .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddMicrosoftIdentityWebApi(builder.Configuration)
     ;
 
-if (!builder.Environment.IsDevelopment())
-{
-    builder.Services.AddHttpsRedirection(options =>
-    {
-        options.RedirectStatusCode = StatusCodes.Status308PermanentRedirect;
-    });
-}
+//if (!builder.Environment.IsDevelopment())
+//{
+//    builder.Services.AddHttpsRedirection(options =>
+//    {
+//        options.RedirectStatusCode = StatusCodes.Status308PermanentRedirect;
+//    });
+//}
 
 builder.Services
     .AddMvcCore(options => { options.EnableEndpointRouting = false; })
@@ -39,10 +42,13 @@ builder.Services.AddTransient<IFilesystem, Filesystem>(
 
 var app = builder.Build();
 
-if (!app.Environment.IsDevelopment())
-{
-    app.UseHttpsRedirection();
-}
+// this app will sit behind a reverse-proxy
+// that will handle SSL off-loading
+
+//if (!app.Environment.IsDevelopment())
+//{
+//    app.UseHttpsRedirection();
+//}
 
 app.HandleExceptions();
 app.UseAuthentication();
