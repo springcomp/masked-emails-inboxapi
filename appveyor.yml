@@ -21,5 +21,5 @@ deploy:
     artifact: /.*\.(zip)$/
     prerelease: true
     on:
-      branch: master # only release from master branch
+      branch: main # only release from master branch
       APPVEYOR_REPO_TAG: true # only release on new tag
