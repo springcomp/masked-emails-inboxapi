@@ -55,4 +55,8 @@ app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
 
+#if DEBUG
+app.Run("http://*:5002");
+#else
 app.Run();
+#endif
