@@ -62,6 +62,21 @@ namespace InboxApi.Tests
             Assert.Equal($"Voici un message qui est envoyé depuis Gmail.{nl}Bien à toi.{nl}", message.RawBody);
         }
 
+        [Fact]
+        public async Task MailDirMessage_BodyHtml()
+        {
+            const string location = "recipient/new/1571380885.M637295P6116.mail,S=3325,W=3391";
+            var filesystem = CreateInMemoryFileSystem();
+            var message = new MailDirMessage(filesystem, location);
+
+            await message.LoadAsync();
+
+            const string expected = @"<div dir=""ltr"">Voici un message qui est envoyé depuis Gmail.<div>Bien à toi.</div></div><img width=""150"" height=""21"" style=""width:1.5625in;height:.2187in"" id=""Image_x0020_1"" src=""data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABEAAAARBAMAAADJQ1rJAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAADUExURf///6fEG8gAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAANSURBVBjTYxgigIEBAACqAAHDdxhIAAAAAElFTkSuQmCC"">
+";
+
+            Assert.Equal(expected, message.HtmlBody);
+        }
+
         private IFilesystem CreateInMemoryFileSystem()
         {
             return new InMemoryFileSystem(
@@ -145,11 +160,26 @@ Voici un message qui est envoy=C3=A9 depuis Gmail.
 Bien =C3=A0 toi.
 
 --0000000000006092fd0595299f5b
+Content-Type: image/png; name=""image001.png""
+Content-Description: image001.png
+Content-Disposition: inline; filename=""image001.png""; size=1542;
+	creation-date=""Fri, 21 Jan 2022 09:53:29 GMT"";
+	modification-date=""Fri, 21 Jan 2022 09:53:29 GMT""
+Content-ID: <image001.png@01D80EB5.1F988BB0>
+Content-Transfer-Encoding: base64
+
+iVBORw0KGgoAAAANSUhEUgAAABEAAAARBAMAAADJQ1rJAAAAAXNSR0IArs4c6QAAAARnQU1BAACxj
+wv8YQUAAAADUExURf///6fEG8gAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAANSURBVBjTYxgigIEBAA
+CqAAHDdxhIAAAAAElFTkSuQmCC
+
+--0000000000006092fd0595299f5b
 Content-Type: text/html; charset=""UTF-8""
 Content-Transfer-Encoding: quoted-printable
 
 <div dir=3D""ltr"">Voici un message qui est envoy=C3=A9 depuis Gmail.<div>Bie=
-n =C3=A0 toi.</div></div>
+n =C3=A0 toi.</div></div><img width=""150"" height=""21"" style=""width:1.562=
+5in;height:.2187in"" id=""Image_x0020_1"" src=""cid:image001.png@01D80EB5.1F9=
+88BB0"">
 
 --0000000000006092fd0595299f5b--"
                 }
