@@ -71,8 +71,9 @@ namespace InboxApi.Tests
 
             await message.LoadAsync();
 
-            const string expected = @"<div dir=""ltr"">Voici un message qui est envoyé depuis Gmail.<div>Bien à toi.</div></div><img width=""150"" height=""21"" style=""width:1.5625in;height:.2187in"" id=""Image_x0020_1"" src=""data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABEAAAARBAMAAADJQ1rJAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAADUExURf///6fEG8gAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAANSURBVBjTYxgigIEBAACqAAHDdxhIAAAAAElFTkSuQmCC"">
-";
+            var nl = Environment.NewLine;
+
+            const string expected = @"<div dir=""ltr"">Voici un message qui est envoyé depuis Gmail.<div>Bien à toi.</div></div><img width=""150"" height=""21"" style=""width:1.5625in;height:.2187in"" id=""Image_x0020_1"" src=""data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABEAAAARBAMAAADJQ1rJAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAADUExURf///6fEG8gAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAANSURBVBjTYxgigIEBAACqAAHDdxhIAAAAAElFTkSuQmCC"">";
 
             Assert.Equal(expected, message.HtmlBody);
         }
@@ -180,7 +181,6 @@ Content-Transfer-Encoding: quoted-printable
 n =C3=A0 toi.</div></div><img width=""150"" height=""21"" style=""width:1.562=
 5in;height:.2187in"" id=""Image_x0020_1"" src=""cid:image001.png@01D80EB5.1F9=
 88BB0"">
-
 --0000000000006092fd0595299f5b--"
                 }
             }
