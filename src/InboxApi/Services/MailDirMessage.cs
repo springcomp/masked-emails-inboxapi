@@ -45,7 +45,10 @@ public class MailDirMessage : IMailDirMessage
         // load message body
 
         RawBody = message.TextBody;
-        HtmlBody = ParseHtml(message);
+        HtmlBody = message.HtmlBody != null
+            ? ParseHtml(message)
+            : ""
+            ;
     }
 
     private async Task<MimeMessage> LoadMessageAsync()
