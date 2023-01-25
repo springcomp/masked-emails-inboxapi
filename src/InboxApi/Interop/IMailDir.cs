@@ -5,4 +5,5 @@ public interface IMailDir
 {
     IAsyncEnumerable<IMailDirMessage> GetMessagesAsync(string inbox);
     Task<IMailDirMessage> GetMessageAsync(string path);
+    Task<string> GetMessageSourceAsync(string path);
 }

@@ -31,7 +31,7 @@ public sealed class EmailsController : ControllerBase
 
     [Route("body")]
     [HttpPost]
-    public async Task<ActionResult> GetEmail()
+    public async Task<ActionResult> GetEmail(string view = null)
     {
         var mediaType = MediaTypeHeaderValue.Parse(Request.ContentType);
 
@@ -51,7 +51,12 @@ public sealed class EmailsController : ControllerBase
 
         logger_.LogDebug($"Retrieving message at location '{path}'.");
 
-        var message = await inboxService_.GetMessageAsync(path);
+        object message = view switch
+        {
+            "source" => await inboxService_.GetRawMessageAsync(path),
+            _ => await inboxService_.GetMessageAsync(path),
+        };
+
         return Ok(message);
     }
 }

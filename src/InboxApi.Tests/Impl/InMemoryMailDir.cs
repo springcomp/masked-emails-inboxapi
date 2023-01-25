@@ -18,6 +18,9 @@ namespace InboxApi.Tests.Impl
                 messages_.Add(new Message(message.Item1, message.Item2));
         }
 
+        internal Message this[int index]
+            => messages_[index];
+        
         public async IAsyncEnumerable<IMailDirMessage> GetMessagesAsync(string inbox)
         {
             foreach (var message in messages_.Where(m => m.IsRecipient(inbox)))
@@ -30,28 +33,39 @@ namespace InboxApi.Tests.Impl
             return Task.FromResult(message);
         }
 
+        public async Task<string> GetMessageSourceAsync(string path)
+        {
+            IMailDirMessage message = messages_.SingleOrDefault(m => m.Location == path);
+            return await message.GetSourceAsync();
+        }
+
         internal sealed class Message : IMailDirMessage
         {
             private readonly IDictionary<string, string[]> headers_;
 
             public Message(IDictionary<string, string[]> headers, string body)
             {
-                RawBody = body;
+                TextBody = body;
                 headers_ = headers;
 
                 Location = GetLocation(headers["To"][0], headers["Date"][0]);
             }
 
+            internal string Mime { get; set; }
+
             public string Location { get; private set; }
             public IDictionary<string, string[]> Headers => headers_;
 
-            public string RawBody { get; }
+            public string TextBody { get; }
             public string HtmlBody { get; }
 
             public Task LoadAsync()
             {
                 return Task.CompletedTask;
             }
+
+            public Task<string> GetSourceAsync()
+                => Task.FromResult(Mime);
 
             public bool IsRecipient(string inbox)
             {

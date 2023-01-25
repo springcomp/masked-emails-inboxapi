@@ -35,6 +35,14 @@ public class MailDir : IMailDir
         return message;
     }
 
+    public async Task<string> GetMessageSourceAsync(string path)
+    {
+        var message = new MailDirMessage(filesystem_, path);
+        var mime =  await message.GetSourceAsync();
+
+        return mime;
+    }
+
     private bool IsValidSubfolder(string path)
     {
         // path is: recipient/<file>
@@ -59,5 +67,4 @@ public class MailDir : IMailDir
 
         return true;
     }
-
 }

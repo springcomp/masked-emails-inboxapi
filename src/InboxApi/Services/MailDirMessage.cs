@@ -1,5 +1,6 @@
 using InboxApi.Interop;
 using MimeKit;
+using System.Text;
 using System.Text.RegularExpressions;
 
 public class MailDirMessage : IMailDirMessage
@@ -18,7 +19,7 @@ public class MailDirMessage : IMailDirMessage
 
     public IDictionary<string, string[]> Headers { get; private set; }
 
-    public string RawBody { get; private set; }
+    public string TextBody { get; private set; }
     public string HtmlBody { get; private set; }
 
     public async Task LoadAsync()
@@ -44,11 +45,25 @@ public class MailDirMessage : IMailDirMessage
 
         // load message body
 
-        RawBody = message.TextBody;
+        TextBody = message.TextBody;
         HtmlBody = message.HtmlBody != null
             ? ParseHtml(message)
             : ""
             ;
+    }
+
+    public async Task<string> GetSourceAsync()
+    {
+        var message = await LoadMessageAsync();
+
+        using var stream = new MemoryStream();
+
+        await message.WriteToAsync(
+            FormatOptions.Default,
+            stream
+            );
+
+        return Encoding.UTF8.GetString(stream.ToArray());
     }
 
     private async Task<MimeMessage> LoadMessageAsync()
@@ -63,7 +78,7 @@ public class MailDirMessage : IMailDirMessage
     private static readonly Regex HtmlSrcRegex =
         new Regex("<img [^\\>]*src=\"cid:(?<cid>[^\"]+)\"[^\\>]*>")
         ;
-    private string ParseHtml(MimeMessage message)
+    private static string ParseHtml(MimeMessage message)
     {
         return HtmlSrcRegex.Replace(
             message.HtmlBody,

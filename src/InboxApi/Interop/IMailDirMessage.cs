@@ -17,10 +17,10 @@ public interface IMailDirMessage
     IDictionary<string, string[]> Headers { get; }
 
     /// <summary>
-    /// The RFC822 message body.
+    /// The plain/text | HTML message body.
     /// Initially empty, load with the <see cref="LoadAsync" /> method.
     /// </summary>
-    string RawBody { get; }
+    string TextBody { get; }
     string HtmlBody { get; }
 
     /// <summary>
@@ -28,4 +28,7 @@ public interface IMailDirMessage
     /// </summary>
     /// <returns></returns>
     Task LoadAsync();
+
+    /// Reads the raw RFC822 .eml message source
+    Task<string> GetSourceAsync();
 }

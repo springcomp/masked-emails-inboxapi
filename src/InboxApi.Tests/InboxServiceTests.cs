@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using InboxApi.Interop;
 using InboxApi.Tests.Impl;
 using Xunit;
 
@@ -47,9 +46,20 @@ namespace InboxApi.Tests
             Assert.Equal("Voici un message qui est envoyé depuis Gmail.\r\nBien à toi.\r\n", message.TextBody);
         }
 
+        [Fact]
+        public async Task InboxService_GetRawMessage()
+        {
+            var mailDir = CreateInMemoryMailDir();
+            var service = new InboxService(mailDir);
+
+            var rawMessage = await service.GetRawMessageAsync("domain.tld/recipient/new/1571384503.M637295P6116.mail,S=3325,W=3391");
+
+            Assert.Equal("RFC822", rawMessage);
+        }
+
         private static IMailDir CreateInMemoryMailDir()
         {
-            return new InMemoryMailDir(
+            var mailDir = new InMemoryMailDir(
                 new InboxApiTestMessage(
                     new Dictionary<string, string[]>
                     {
@@ -73,6 +83,10 @@ namespace InboxApi.Tests
                     , "Voici un message qui est envoyé depuis Gmail.\r\nBien à toi.\r\n"
                 )
             );
+
+            mailDir[1].Mime = "RFC822";
+
+            return mailDir;
         }
     }
 }

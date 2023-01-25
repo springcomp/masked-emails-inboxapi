@@ -59,7 +59,7 @@ namespace InboxApi.Tests
 
             var nl = Environment.NewLine;
 
-            Assert.Equal($"Voici un message qui est envoyé depuis Gmail.{nl}Bien à toi.{nl}", message.RawBody);
+            Assert.Equal($"Voici un message qui est envoyé depuis Gmail.{nl}Bien à toi.{nl}", message.TextBody);
         }
 
         [Fact]

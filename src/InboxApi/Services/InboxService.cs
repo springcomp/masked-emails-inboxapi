@@ -19,10 +19,18 @@ public sealed class InboxService : IInboxService
     public async Task<InboxMessage> GetMessageAsync(string path)
     {
         var message = await mailDir_.GetMessageAsync(path);
-        if (message.RawBody == null && message.HtmlBody == null)
+        if (message.TextBody == null && message.HtmlBody == null)
             throw new KeyNotFoundException("This message may have expired or been forwarded to its target email address.");
 
         return MimeParse(message);
+    }
+    public async Task<string> GetRawMessageAsync(string path)
+    {
+        var rawMessage = await mailDir_.GetMessageSourceAsync(path);
+        if (rawMessage == null)
+            throw new KeyNotFoundException("This message may have expired or been forwarded to its target email address.");
+
+        return rawMessage;
     }
 
     private static InboxMessage MimeParse(IMailDirMessage message)
@@ -51,7 +59,7 @@ public sealed class InboxService : IInboxService
             ReceivedUtc = dateTimeReceived.UtcDateTime,
             Subject = subject,
 
-            TextBody = message.RawBody,
+            TextBody = message.TextBody,
             HtmlBody = message.HtmlBody,
         };
     }
