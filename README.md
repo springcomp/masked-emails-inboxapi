@@ -1,3 +1,5 @@
+> **Deprecated** This repository is deprecated in favor of a more robust [SimpleLogin](https://simplelogin.io/) solution.
+
 # Overview
 
 This repository contains a simple Web API to read messages from a filesystem-based MailDir mailbox.
